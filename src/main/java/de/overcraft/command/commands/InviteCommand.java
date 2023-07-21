@@ -5,6 +5,7 @@ import de.overcraft.Sections;
 import de.overcraft.command.RegisterCommand;
 import de.overcraft.command.SlashCommandRegister;
 import de.overcraft.command.SlashCommandTemplates;
+import de.overcraft.strings.packages.InviteCommandStrings;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.MessageFlag;
@@ -24,12 +25,11 @@ import java.util.Arrays;
 @RegisterCommand
 public class InviteCommand implements SlashCommandRegister {
 
-    private static final String DisplayName = "invite";
     @Override
     public SlashCommandBuilder get() {
         return new SlashCommandBuilder()
-                .setName("invite")
-                .setDescription("Invite people to this server")
+                .setName(InviteCommandStrings.COMMAND_DISPLAYNAME)
+                .setDescription(InviteCommandStrings.COMMAND_DESCRIPTION)
                 .setOptions(Arrays.asList(
                         SlashCommandTemplates.COMMAND_OPTION_SECTIONS
                     ))
@@ -38,35 +38,62 @@ public class InviteCommand implements SlashCommandRegister {
 
     @Override
     public void onSlashCommandCreate(SlashCommandCreateEvent event) {
+        Bot bot = Bot.get();
+        User requestingUser = event.getInteraction().getUser();
         Sections.SectionEnum section = Sections.SectionEnum.values()[event.getSlashCommandInteraction().getArgumentDecimalValueByIndex(0).get().intValue()];
         SlashCommandInteraction interaction = event.getSlashCommandInteraction();
-        Message inviteResponder = interaction.createImmediateResponder().setContent("Requesting invite:")
+        Message inviteResponder = interaction.createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_REQUESTING_MESSAGE)
                 .addComponents(ActionRow.of(
-                        Button.success("allow-invite", "Allow"),
-                        Button.danger("deny-invite", "Deny")
+                        Button.success(InviteCommandStrings.REQUEST.COMPONENT.BUTTON_ALLOW.ID, InviteCommandStrings.REQUEST.COMPONENT.BUTTON_ALLOW.LABEL),
+                        Button.danger(InviteCommandStrings.REQUEST.COMPONENT.BUTTON_DENY.ID, InviteCommandStrings.REQUEST.COMPONENT.BUTTON_DENY.LABEL)
                 )
         ).respond().join().update().join();
         System.out.println("Invite approval message created. Id: " + inviteResponder.getId());
+
         // Component handling aka denying and accepting
-        Bot.get().getMessageHandler().addMessageComponentCreateListener(inviteResponder, e -> {
-            User user = e.getInteraction().getUser();
-            System.out.println("User " + user.getName() + " tried to approve invite");
-            if(Bot.get().getSections().getSection(section).isManager(user.getId())) {
-                if(!e.getMessageComponentInteraction().getCustomId().equals("allow-invite")) {
-                    e.getInteraction().createImmediateResponder().setContent("Requesting invite: **Denied!**");
+        bot.getMessageHandler().addMessageComponentCreateListener(inviteResponder, e -> {
+            User interactingUser = e.getInteraction().getUser();
+            System.out.println("User " + interactingUser.getName() + " tried to approve invite");
+
+            if(bot.getSections().getSection(section).isManager(interactingUser.getId())) {
+                // Deny interaction
+                if(!e.getMessageComponentInteraction().getCustomId().equals(InviteCommandStrings.REQUEST.COMPONENT.BUTTON_ALLOW.ID)) {
+                    e.getInteraction().createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_DENY_MESSAGE);
                     System.out.println("Invite denied");
-                }else {
+                }
+                // Allow interaction
+                else {
                     Invite invite = new InviteBuilder(e.getApi().getChannelById(1021108286692528277L).get().asServerChannel().get()).setMaxUses(1).create().join();
-                    e.getInteraction().createImmediateResponder().setContent("Requesting invite: **Approved!**").addComponents(ActionRow.of(
-                            Button.secondary("invite-link", "Link")
+                    // Create button with invite only for the invite requester
+                    Message link = e.getInteraction().createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_ALLOW_MESSAGE).addComponents(ActionRow.of(
+                            Button.secondary(InviteCommandStrings.REQUEST.COMPONENT.BUTTON_LINK.ID, InviteCommandStrings.REQUEST.COMPONENT.BUTTON_LINK.LABEL)
                     )).respond().join().update().join();
+
+                    bot.getMessageHandler().addMessageComponentCreateListener(link, ev -> {
+                        if(!ev.getInteraction().getUser().equals(requestingUser)) {
+                            ev.getInteraction().createImmediateResponder()
+                                    .setContent(InviteCommandStrings.REQUEST.RESPONDER_NOT_ALLOWED_TO_VIEW_INVITE)
+                                    .setFlags(MessageFlag.EPHEMERAL)
+                                    .respond();
+                            return;
+                        }
+
+                        ev.getInteraction().createImmediateResponder()
+                                .setContent(InviteCommandStrings.REQUEST.RESPONDER_INVITE_LINK.formatted(invite.getUrl()))
+                                .setFlags(MessageFlag.EPHEMERAL)
+                                .respond();
+                    });
+
                     System.out.println("Invite approved");
                 }
+
                 inviteResponder.delete();
             }else {
-                e.getInteraction().createImmediateResponder().setContent("You have not the sufficient rights to approve or deny an invite").setFlags(MessageFlag.EPHEMERAL).respond();
+                e.getInteraction().createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_INSUFFICIENT_RIGHTS).setFlags(MessageFlag.EPHEMERAL).respond();
             }
 
         });
     }
+
+
 }
