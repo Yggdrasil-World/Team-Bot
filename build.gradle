@@ -1,5 +1,12 @@
 plugins {
     id 'java'
+    id 'application'
+}
+
+mainClassName = 'de.overcraft.EntryPoint'
+
+application {
+    mainClass.set(mainClassName)
 }
 
 group 'de.overcraft'
@@ -19,3 +26,4 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+

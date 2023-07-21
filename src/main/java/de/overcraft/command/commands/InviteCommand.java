@@ -42,7 +42,7 @@ public class InviteCommand implements SlashCommandRegister {
         User requestingUser = event.getInteraction().getUser();
         Sections.SectionEnum section = Sections.SectionEnum.values()[event.getSlashCommandInteraction().getArgumentDecimalValueByIndex(0).get().intValue()];
         SlashCommandInteraction interaction = event.getSlashCommandInteraction();
-        Message inviteResponder = interaction.createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_REQUESTING_MESSAGE)
+        Message inviteResponder = interaction.createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_REQUESTING_MESSAGE.formatted(section.toString()))
                 .addComponents(ActionRow.of(
                         Button.success(InviteCommandStrings.REQUEST.COMPONENT.BUTTON_ALLOW.ID, InviteCommandStrings.REQUEST.COMPONENT.BUTTON_ALLOW.LABEL),
                         Button.danger(InviteCommandStrings.REQUEST.COMPONENT.BUTTON_DENY.ID, InviteCommandStrings.REQUEST.COMPONENT.BUTTON_DENY.LABEL)
@@ -58,14 +58,14 @@ public class InviteCommand implements SlashCommandRegister {
             if(bot.getSections().getSection(section).isManager(interactingUser.getId())) {
                 // Deny interaction
                 if(!e.getMessageComponentInteraction().getCustomId().equals(InviteCommandStrings.REQUEST.COMPONENT.BUTTON_ALLOW.ID)) {
-                    e.getInteraction().createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_DENY_MESSAGE);
+                    e.getInteraction().createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_DENY_MESSAGE.formatted(section.toString())).respond();
                     System.out.println("Invite denied");
                 }
                 // Allow interaction
                 else {
-                    Invite invite = new InviteBuilder(e.getApi().getChannelById(1021108286692528277L).get().asServerChannel().get()).setMaxUses(1).create().join();
+                    Invite invite = new InviteBuilder(e.getApi().getChannelById(1021108286692528277L).get().asServerChannel().get()).setMaxUses(1).setUnique(true).create().join();
                     // Create button with invite only for the invite requester
-                    Message link = e.getInteraction().createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_ALLOW_MESSAGE).addComponents(ActionRow.of(
+                    Message link = e.getInteraction().createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_ALLOW_MESSAGE.formatted(section.toString())).addComponents(ActionRow.of(
                             Button.secondary(InviteCommandStrings.REQUEST.COMPONENT.BUTTON_LINK.ID, InviteCommandStrings.REQUEST.COMPONENT.BUTTON_LINK.LABEL)
                     )).respond().join().update().join();
 
@@ -87,7 +87,7 @@ public class InviteCommand implements SlashCommandRegister {
                     System.out.println("Invite approved");
                 }
 
-                inviteResponder.delete();
+                inviteResponder.createUpdater().removeAllComponents().applyChanges();
             }else {
                 e.getInteraction().createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_INSUFFICIENT_RIGHTS).setFlags(MessageFlag.EPHEMERAL).respond();
             }
