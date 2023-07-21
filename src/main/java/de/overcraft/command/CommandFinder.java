@@ -1,20 +1,15 @@
 package de.overcraft.command;
 
-import org.javacord.api.interaction.SlashCommand;
-import org.javacord.api.interaction.SlashCommandBuilder;
 import org.reflections.Reflections;
-import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
+
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 public class CommandFinder {
 

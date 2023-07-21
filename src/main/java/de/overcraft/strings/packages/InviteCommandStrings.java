@@ -1,7 +1,5 @@
 package de.overcraft.strings.packages;
 
-import java.util.SplittableRandom;
-
 public interface InviteCommandStrings {
     String COMMAND_DISPLAYNAME = "invite";
     String COMMAND_DESCRIPTION = "Invite people to this server";

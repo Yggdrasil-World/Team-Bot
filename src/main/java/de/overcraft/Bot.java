@@ -3,11 +3,8 @@ package de.overcraft;
 import de.overcraft.command.CommandFinder;
 import de.overcraft.command.SlashCommandHandler;
 import de.overcraft.message.MessageHandler;
-import org.javacord.api.DiscordApi;
-import org.javacord.api.entity.server.Server;
 
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
+import org.javacord.api.DiscordApi;
 
 public class Bot {
 

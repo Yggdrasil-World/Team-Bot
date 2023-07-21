@@ -1,6 +1,7 @@
 package de.overcraft.command;
 
 import de.overcraft.Sections;
+
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionChoice;
 import org.javacord.api.interaction.SlashCommandOptionType;

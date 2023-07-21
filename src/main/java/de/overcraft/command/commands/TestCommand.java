@@ -1,6 +1,7 @@
 package de.overcraft.command.commands;
 
 import de.overcraft.command.SlashCommandRegister;
+
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.interaction.SlashCommandBuilder;
 

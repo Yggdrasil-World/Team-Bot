@@ -1,13 +1,9 @@
 package de.overcraft;
 
-import de.overcraft.command.CommandFinder;
-import de.overcraft.command.SlashCommandRegister;
+
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
-
 import java.io.*;
-import java.nio.CharBuffer;
-import java.util.Set;
 
 public class EntryPoint {
     public static void main(String[] args) {

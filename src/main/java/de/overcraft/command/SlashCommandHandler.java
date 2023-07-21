@@ -5,9 +5,7 @@ import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.interaction.SlashCommand;
 import org.javacord.api.listener.interaction.SlashCommandCreateListener;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
