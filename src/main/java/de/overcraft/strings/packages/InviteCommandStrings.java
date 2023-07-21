@@ -6,9 +6,9 @@ public interface InviteCommandStrings {
     String COMMAND_DISPLAYNAME = "invite";
     String COMMAND_DESCRIPTION = "Invite people to this server";
     interface REQUEST {
-        String RESPONDER_REQUESTING_MESSAGE = "Requesting invite for **%s**:";
-        String RESPONDER_DENY_MESSAGE = "Invite for for %s: **Denied!**";
-        String RESPONDER_ALLOW_MESSAGE = "Invite for %s: **Approved!**";
+        String RESPONDER_REQUESTING_MESSAGE = "Requesting invite for **%s**, %s:";
+        String RESPONDER_DENY_MESSAGE = "Invite for for %s, %s: **Denied!**";
+        String RESPONDER_ALLOW_MESSAGE = "Invite for %s, %s: **Approved!**";
         String RESPONDER_INVITE_LINK = "Invite: %s";
         String RESPONDER_INSUFFICIENT_RIGHTS = "You have not the sufficient rights to approve or deny an invite";
         String RESPONDER_NOT_ALLOWED_TO_VIEW_INVITE = "You are not allowed to view the invite! If you need one you have to request it yourself";

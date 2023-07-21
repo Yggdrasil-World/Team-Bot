@@ -6,6 +6,7 @@ import de.overcraft.command.RegisterCommand;
 import de.overcraft.command.SlashCommandRegister;
 import de.overcraft.command.SlashCommandTemplates;
 import de.overcraft.strings.packages.InviteCommandStrings;
+import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.MessageFlag;
@@ -39,10 +40,16 @@ public class InviteCommand implements SlashCommandRegister {
     @Override
     public void onSlashCommandCreate(SlashCommandCreateEvent event) {
         Bot bot = Bot.get();
+        DiscordApi api = bot.getApi();
         User requestingUser = event.getInteraction().getUser();
         Sections.SectionEnum section = Sections.SectionEnum.values()[event.getSlashCommandInteraction().getArgumentDecimalValueByIndex(0).get().intValue()];
         SlashCommandInteraction interaction = event.getSlashCommandInteraction();
-        Message inviteResponder = interaction.createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_REQUESTING_MESSAGE.formatted(section.toString()))
+        StringBuilder mentionString = new StringBuilder();
+        Arrays.stream(bot.getSections().getSection(section).sectionManagers())
+                .mapToObj(manager -> api.getUserById(manager).join().getMentionTag())
+                .forEach(mentionString::append);
+        Message inviteResponder = interaction.createImmediateResponder()
+                .setContent(InviteCommandStrings.REQUEST.RESPONDER_REQUESTING_MESSAGE.formatted(section.toString(), mentionString.toString()))
                 .addComponents(ActionRow.of(
                         Button.success(InviteCommandStrings.REQUEST.COMPONENT.BUTTON_ALLOW.ID, InviteCommandStrings.REQUEST.COMPONENT.BUTTON_ALLOW.LABEL),
                         Button.danger(InviteCommandStrings.REQUEST.COMPONENT.BUTTON_DENY.ID, InviteCommandStrings.REQUEST.COMPONENT.BUTTON_DENY.LABEL)
@@ -58,16 +65,19 @@ public class InviteCommand implements SlashCommandRegister {
             if(bot.getSections().getSection(section).isManager(interactingUser.getId())) {
                 // Deny interaction
                 if(!e.getMessageComponentInteraction().getCustomId().equals(InviteCommandStrings.REQUEST.COMPONENT.BUTTON_ALLOW.ID)) {
-                    e.getInteraction().createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_DENY_MESSAGE.formatted(section.toString())).respond();
+                    e.getInteraction().createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_DENY_MESSAGE.formatted(section.toString(), requestingUser.getMentionTag())).respond();
                     System.out.println("Invite denied");
                 }
                 // Allow interaction
                 else {
                     Invite invite = new InviteBuilder(e.getApi().getChannelById(1021108286692528277L).get().asServerChannel().get()).setMaxUses(1).setUnique(true).create().join();
                     // Create button with invite only for the invite requester
-                    Message link = e.getInteraction().createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_ALLOW_MESSAGE.formatted(section.toString())).addComponents(ActionRow.of(
-                            Button.secondary(InviteCommandStrings.REQUEST.COMPONENT.BUTTON_LINK.ID, InviteCommandStrings.REQUEST.COMPONENT.BUTTON_LINK.LABEL)
-                    )).respond().join().update().join();
+                    Message link = e.getInteraction().createImmediateResponder()
+                            .setContent(InviteCommandStrings.REQUEST.RESPONDER_ALLOW_MESSAGE.formatted(section.toString(), requestingUser.getMentionTag()))
+                            .addComponents(ActionRow.of(
+                                Button.secondary(InviteCommandStrings.REQUEST.COMPONENT.BUTTON_LINK.ID, InviteCommandStrings.REQUEST.COMPONENT.BUTTON_LINK.LABEL)
+                            ))
+                            .respond().join().update().join();
 
                     bot.getMessageHandler().addMessageComponentCreateListener(link, ev -> {
                         if(!ev.getInteraction().getUser().equals(requestingUser)) {
