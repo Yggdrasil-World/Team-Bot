@@ -4,7 +4,13 @@ public interface InviteCommandStrings {
     String COMMAND_DISPLAYNAME = "invite";
     String COMMAND_DESCRIPTION = "Invite people to this server";
     interface REQUEST {
-        String RESPONDER_REQUESTING_MESSAGE = "Requesting invite for **%s**, %s:";
+
+        /**
+         * 1: Who is requesting
+         * 2: Which section for
+         * 3: All the approves needed
+         */
+        String RESPONDER_REQUESTING_MESSAGE = "%s requesting invite for a new @**%s**\nApprove needed from:\n%s";
         String RESPONDER_DENY_MESSAGE = "Invite for for %s, %s: **Denied!**";
         String RESPONDER_ALLOW_MESSAGE = "Invite for %s, %s: **Approved!**";
         String RESPONDER_INVITE_LINK = "Invite: %s";
