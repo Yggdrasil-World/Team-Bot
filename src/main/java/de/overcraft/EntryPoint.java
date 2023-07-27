@@ -5,7 +5,6 @@ import io.github.cdimascio.dotenv.Dotenv;
 import io.github.cdimascio.dotenv.DotenvBuilder;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
-import java.io.*;
 
 public class EntryPoint {
     public static void main(String[] args) {
