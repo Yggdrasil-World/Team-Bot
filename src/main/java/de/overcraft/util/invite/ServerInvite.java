@@ -40,10 +40,13 @@ public interface ServerInvite {
         return event -> {
             MessageComponentInteraction interaction = event.getMessageComponentInteraction();
             User interactingUser = interaction.getUser();
-            if (!approvalsNeededFrom().contains(interactingUser))
+            if (!approvalsNeededFrom().contains(interactingUser)) {
+                interaction.createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_NOT_ALLOWED_TO_APPROVE_INVITE).setFlags(MessageFlag.EPHEMERAL).respond();
                 return;
+            }
             String id = interaction.getCustomId();
             if (id.equals(InviteCommandStrings.REQUEST.COMPONENT.BUTTON_ALLOW.ID)) {
+                interaction.createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_INVITE_APPROVED_CONFIRMATION).setFlags(MessageFlag.EPHEMERAL);
                 approve(interactingUser);
             } else if (id.equals(InviteCommandStrings.REQUEST.COMPONENT.BUTTON_DENY.ID)) {
                 interaction.createImmediateResponder()
@@ -53,15 +56,19 @@ public interface ServerInvite {
                                 interaction.getUser())
                         ).respond();
             }
+
+            // If invite is approved create invite link message
             if (approvalsNeededFrom().isEmpty()) {
                 Invite invite = new InviteBuilder(Bot.get().getWelcomeChannel()).setUnique(true).setMaxUses(1).create().join();
                 MessageComponentCreateListener linkMessageComponentCreateListener = e -> {
                     MessageComponentInteraction inviteInteraction = e.getMessageComponentInteraction();
                     User inviteInteractingUser = interaction.getUser();
-                    if (!inviteInteractingUser.equals(requestingUser()))
-                        return;
                     if (!inviteInteraction.getCustomId().equals(InviteCommandStrings.REQUEST.COMPONENT.BUTTON_LINK.ID))
                         return;
+                    if (!inviteInteractingUser.equals(requestingUser())) {
+                        interaction.createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_NOT_ALLOWED_TO_VIEW_INVITE);
+                        return;
+                    }
                     inviteInteraction.createImmediateResponder().setContent(invite.getUrl().toString()).setFlags(MessageFlag.EPHEMERAL).respond();
                 };
 

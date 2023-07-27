@@ -26,8 +26,9 @@ public interface InviteCommandStrings {
          */
         String RESPONDER_ALLOW_MESSAGE = "Invite for %s requested by %s: **Approved!**";
         String RESPONDER_INVITE_LINK = "%s invite ready:";
-        String RESPONDER_INSUFFICIENT_RIGHTS = "You have not the sufficient rights to approve or deny an invite";
-        String RESPONDER_NOT_ALLOWED_TO_VIEW_INVITE = "You are not allowed to view the invite! If you need one you have to request it yourself";
+        String RESPONDER_NOT_ALLOWED_TO_APPROVE_INVITE = "Your are not capable of approving this invite";
+        String RESPONDER_NOT_ALLOWED_TO_VIEW_INVITE = "You are not allowed to view the invite as you are not the one who requested it!";
+        String RESPONDER_INVITE_APPROVED_CONFIRMATION = "You've successfully approved the invite";
 
         interface COMPONENT {
 
