@@ -1,5 +1,6 @@
 package de.overcraft.strings.packages;
 
+import org.javacord.api.entity.message.component.ActionRow;
 import org.javacord.api.entity.message.component.Button;
 
 public interface InviteCommandStrings {
@@ -12,14 +13,26 @@ public interface InviteCommandStrings {
          * 2: Which section for
          * 3: All the approvals needed
          */
-        String RESPONDER_REQUESTING_MESSAGE = "%s requesting invite for a new @**%s**\nApprove needed from:\n%s";
-        String RESPONDER_DENY_MESSAGE = "Invite for for %s, %s: **Denied!**";
-        String RESPONDER_ALLOW_MESSAGE = "Invite for %s, %s: **Approved!**";
+        String RESPONDER_REQUESTING_MESSAGE = "%s requesting invite for a new **%s**\nApprove needed from:\n%s";
+        /**
+         * 1: Section mention
+         * 2: User who requested mention
+         * 3: User who denied mention
+         */
+        String RESPONDER_DENY_MESSAGE = "Invite for %s requested by %s got denied by %s: **Denied!**";
+        /**
+         * 1: Section mention
+         * 2: User who requested mention
+         */
+        String RESPONDER_ALLOW_MESSAGE = "Invite for %s requested by %s: **Approved!**";
         String RESPONDER_INVITE_LINK = "%s invite ready:";
         String RESPONDER_INSUFFICIENT_RIGHTS = "You have not the sufficient rights to approve or deny an invite";
         String RESPONDER_NOT_ALLOWED_TO_VIEW_INVITE = "You are not allowed to view the invite! If you need one you have to request it yourself";
 
         interface COMPONENT {
+
+            ActionRow BUTTON_ALLOW_AND_DENY_ACTION_ROW = ActionRow.of(BUTTON_ALLOW.COMPONENT, BUTTON_DENY.COMPONENT);
+
             interface BUTTON_ALLOW {
                 String LABEL = "Allow";
                 String ID = "allow-invite";
