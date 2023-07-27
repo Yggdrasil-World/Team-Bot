@@ -7,7 +7,7 @@ import java.io.*;
 
 public class EntryPoint {
     public static void main(String[] args) {
-        File file = new File("../config/token.txt");
+        /*File file = new File("../config/token.txt");
         String token;
         try {
             BufferedReader fileReader = new BufferedReader(new FileReader(file));
@@ -16,8 +16,8 @@ public class EntryPoint {
             throw new RuntimeException(e);
         }
         if(token.isBlank() || token.isEmpty())
-            throw new RuntimeException("no token found");
-        DiscordApi api = new DiscordApiBuilder().setToken(token).login().join();
+            throw new RuntimeException("no token found");*/
+        DiscordApi api = new DiscordApiBuilder().setToken("MTEzMTU4NTQ0MTY3ODc2NjIyMQ.GUoV6i.AWrsBvaPGkjuzmaDbVPuYDEPMv_WhPoPpJ66Wk").login().join();
         new Bot(api);
     }
 
