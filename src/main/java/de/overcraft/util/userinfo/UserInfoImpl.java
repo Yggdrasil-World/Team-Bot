@@ -18,5 +18,8 @@ public class UserInfoImpl implements UserInfo {
         this.lastMessage = message;
     }
 
-
+    @Override
+    public String toString( ) {
+        return lastMessage.getIdAsString();
+    }
 }

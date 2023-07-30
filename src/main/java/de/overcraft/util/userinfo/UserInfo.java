@@ -14,4 +14,5 @@ public interface UserInfo {
     static UserInfo CreateNew(Message message) {
         return new UserInfoImpl(message);
     }
+
 }
