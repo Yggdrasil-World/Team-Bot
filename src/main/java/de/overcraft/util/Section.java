@@ -1,4 +1,6 @@
-package de.overcraft;
+package de.overcraft.util;
+
+import de.overcraft.SectionImpl;
 
 import org.javacord.api.entity.permission.Role;
 
