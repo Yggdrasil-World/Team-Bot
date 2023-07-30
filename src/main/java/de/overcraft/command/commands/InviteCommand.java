@@ -1,7 +1,7 @@
 package de.overcraft.command.commands;
 
-import de.overcraft.Bot;
-import de.overcraft.Sections;
+import de.overcraft.BotImpl;
+import de.overcraft.util.Sections;
 import de.overcraft.command.RegisterCommand;
 import de.overcraft.command.SlashCommandRegister;
 import de.overcraft.command.SlashCommandTemplates;
@@ -36,13 +36,13 @@ public class InviteCommand implements SlashCommandRegister {
 
     @Override
     public void onSlashCommandCreate(SlashCommandCreateEvent event) {
-        Bot bot = Bot.get();
-        DiscordApi api = bot.getApi();
+        BotImpl botImpl = BotImpl.get();
+        DiscordApi api = botImpl.getApi();
         User requestingUser = event.getInteraction().getUser();
         Sections.SectionEnum section = Sections.SectionEnum.values()[event.getSlashCommandInteraction().getArgumentDecimalValueByIndex(0).get().intValue()];
         SlashCommandInteraction interaction = event.getSlashCommandInteraction();
         StringBuilder mentionString = new StringBuilder();
-        Arrays.stream(bot.getSections().getSection(section).sectionManagers())
+        Arrays.stream(botImpl.getSections().getSection(section).sectionManagers())
                 .mapToObj(manager -> api.getUserById(manager).join().getMentionTag())
                 .forEach(mentionString::append);
         Message inviteResponder = interaction.createImmediateResponder()
@@ -55,11 +55,11 @@ public class InviteCommand implements SlashCommandRegister {
         System.out.println("Invite approval message created. Id: " + inviteResponder.getId());
 
         // Component handling aka denying and accepting
-        bot.getMessageHandler().addMessageComponentCreateListener(inviteResponder, e -> {
+        botImpl.getMessageHandler().addMessageComponentCreateListener(inviteResponder, e -> {
             User interactingUser = e.getInteraction().getUser();
             System.out.println("User " + interactingUser.getName() + " tried to approve invite");
 
-            if(bot.getSections().getSection(section).isManager(interactingUser.getId())) {
+            if(botImpl.getSections().getSection(section).isManager(interactingUser.getId())) {
                 // Deny interaction
                 if(!e.getMessageComponentInteraction().getCustomId().equals(InviteCommandStrings.REQUEST.COMPONENT.BUTTON_ALLOW.ID)) {
                     e.getInteraction().createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_DENY_MESSAGE.formatted(section.toString(), requestingUser.getMentionTag())).respond();
@@ -76,7 +76,7 @@ public class InviteCommand implements SlashCommandRegister {
                             ))
                             .respond().join().update().join();
 
-                    bot.getMessageHandler().addMessageComponentCreateListener(link, ev -> {
+                    botImpl.getMessageHandler().addMessageComponentCreateListener(link, ev -> {
                         if(!ev.getInteraction().getUser().equals(requestingUser)) {
                             ev.getInteraction().createImmediateResponder()
                                     .setContent(InviteCommandStrings.REQUEST.RESPONDER_NOT_ALLOWED_TO_VIEW_INVITE)
