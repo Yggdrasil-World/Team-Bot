@@ -1,4 +1,4 @@
-package de.overcraft;
+package de.overcraft.util;
 
 
 // TODO: change into own subclasses
