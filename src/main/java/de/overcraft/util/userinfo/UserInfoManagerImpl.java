@@ -13,7 +13,7 @@ public class UserInfoManagerImpl implements UserInfoManager {
 
     public UserInfoManagerImpl(Bot bot) {
         this.infoMap = new HashMap<>();
-        bot.getApi().getServerById(Bot.getDefaultServer()).get().addMessageCreateListener(event -> {
+        bot.getServer().addMessageCreateListener(event -> {
            if(!event.getMessageAuthor().isUser())
                return;
             long id = event.getMessageAuthor().asUser().get().getId();

@@ -6,6 +6,8 @@ import de.overcraft.command.SlashCommandHandlerFactory;
 
 import de.overcraft.util.Section;
 import de.overcraft.util.Sections;
+import de.overcraft.util.userinfo.UserInfoManager;
+import de.overcraft.util.userinfo.UserInfoManagerImpl;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.server.Server;
 
@@ -15,6 +17,7 @@ public class BotImpl implements Bot{
     private final long serverId;
     private final DiscordApi api;
     private final SlashCommandHandler slashCommandHandler;
+    private final UserInfoManager userInfoManager;
     private final Sections sections;
 
     public BotImpl(DiscordApi api, long serverId) {
@@ -27,6 +30,7 @@ public class BotImpl implements Bot{
                 Section.Of(new long[]{351264499124273152L}, api.getRoleById(1026589866328346705L).get()), // Developer
                 Section.Of(new long[]{1082920396724121600L}, api.getRoleById(1021111184667189288L).get())); // Storywriter
         this.slashCommandHandler = SlashCommandHandlerFactory.CreateSlashCommandHandler(this::getServer);
+        this.userInfoManager = new UserInfoManagerImpl(this);
         registerCommands();
     }
 
@@ -47,6 +51,12 @@ public class BotImpl implements Bot{
     public Server getServer() {
         return api.getServerById(serverId).get();
     }
+
+    @Override
+    public UserInfoManager getUserInfoManager() {
+        return userInfoManager;
+    }
+
     public Sections getSections() {
         return sections;
     }
