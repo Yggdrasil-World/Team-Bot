@@ -4,14 +4,15 @@ import de.overcraft.Bot;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.user.User;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class UserInfoManagerImpl implements UserInfoManager {
 
     private final Map<Long, UserInfo> infoMap;
 
-    public UserInfoManagerImpl(Map<Long, UserInfo> infoMap, Bot bot) {
-        this.infoMap = infoMap;
+    public UserInfoManagerImpl(Bot bot) {
+        this.infoMap = new HashMap<>();
         bot.getApi().getServerById(Bot.getDefaultServer()).get().addMessageCreateListener(event -> {
            if(!event.getMessageAuthor().isUser())
                return;
