@@ -1,7 +1,8 @@
 package de.overcraft;
 
 import de.overcraft.command.CommandFinder;
-import de.overcraft.command.SlashCommandHandlerImpl;
+import de.overcraft.command.SlashCommandHandler;
+import de.overcraft.command.SlashCommandHandlerFactory;
 
 import de.overcraft.util.Section;
 import de.overcraft.util.Sections;
@@ -13,7 +14,7 @@ import java.security.InvalidParameterException;
 public class BotImpl implements Bot{
     private final long serverId;
     private final DiscordApi api;
-    private final SlashCommandHandlerImpl slashCommandHandlerInterface;
+    private final SlashCommandHandler slashCommandHandler;
     private final Sections sections;
 
     public BotImpl(DiscordApi api, long serverId) {
@@ -22,13 +23,12 @@ public class BotImpl implements Bot{
         this.serverId = serverId;
         this.api = api;
         this.sections = new Sections(Section.Of(new long[]{503603263862734858L, 415544998558433280L}), Section.Of(new long[]{351264499124273152L}), Section.Of(new long[]{1082920396724121600L}));
-        this.slashCommandHandlerInterface = new SlashCommandHandlerImpl(api.getServerById(serverId).get());
-
+        this.slashCommandHandler = SlashCommandHandlerFactory.CreateSlashCommandHandler(this::getServer);
         registerCommands();
     }
 
     private void registerCommands() {
-        slashCommandHandlerInterface.registerSlashCommands(CommandFinder.FindCommands());
+        slashCommandHandler.registerSlashCommands(CommandFinder.FindCommands());
     }
 
     public DiscordApi getApi() {
@@ -44,13 +44,12 @@ public class BotImpl implements Bot{
     public Server getServer() {
         return api.getServerById(serverId).get();
     }
-
     public Sections getSections() {
         return sections;
     }
 
-    public SlashCommandHandlerImpl getSlashCommandHandler() {
-        return slashCommandHandlerInterface;
+    public SlashCommandHandler getSlashCommandHandler() {
+        return slashCommandHandler;
     }
 
 }

@@ -1,12 +1,12 @@
 package de.overcraft.command;
 
-import org.javacord.api.entity.server.Server;
+import de.overcraft.util.ServerSupplier;
 
 public interface SlashCommandHandlerFactory {
     static SlashCommandCreateListenerHandler CreateSlashCommandCreateListener() {
         return new SlashCommandCreateListenerHandlerImpl();
     }
-    static SlashCommandHandler CreateSlashCommandHandler(Server server) {
+    static SlashCommandHandler CreateSlashCommandHandler(ServerSupplier server) {
         return new SlashCommandHandlerImpl(server);
     }
 }
