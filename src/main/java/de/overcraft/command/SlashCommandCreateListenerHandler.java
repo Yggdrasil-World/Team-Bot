@@ -8,8 +8,4 @@ public interface SlashCommandCreateListenerHandler extends SlashCommandCreateLis
         addSlashCommandCreateListener(command.getId(), listener);
     }
     void addSlashCommandCreateListener(long commandId, SlashCommandCreateListener listener);
-
-    static SlashCommandCreateListenerHandler CreateNew() {
-        return new SlashCommandCreateListenerHandlerImpl();
-    }
 }

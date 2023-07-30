@@ -1,4 +1,4 @@
-package de.overcraft.command.commands;
+package de.overcraft.command;
 
 import de.overcraft.command.SlashCommandRegister;
 import org.javacord.api.interaction.SlashCommand;
