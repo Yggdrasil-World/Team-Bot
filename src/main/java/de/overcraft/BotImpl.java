@@ -22,7 +22,10 @@ public class BotImpl implements Bot{
             throw new InvalidParameterException("Invalid server id");
         this.serverId = serverId;
         this.api = api;
-        this.sections = new Sections(Section.Of(new long[]{503603263862734858L, 415544998558433280L}), Section.Of(new long[]{351264499124273152L}), Section.Of(new long[]{1082920396724121600L}));
+        this.sections = new Sections(
+                Section.Of(new long[]{503603263862734858L, 415544998558433280L}, api.getRoleById(1021111128308318248L).get()), // Builder
+                Section.Of(new long[]{351264499124273152L}, api.getRoleById(1026589866328346705L).get()), // Developer
+                Section.Of(new long[]{1082920396724121600L}, api.getRoleById(1021111184667189288L).get())); // Storywriter
         this.slashCommandHandler = SlashCommandHandlerFactory.CreateSlashCommandHandler(this::getServer);
         registerCommands();
     }

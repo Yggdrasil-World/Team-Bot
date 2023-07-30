@@ -1,6 +1,7 @@
 package de.overcraft.util.invite;
 
-import de.overcraft.Section;
+import de.overcraft.util.Section;
+import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 
 import java.util.Set;

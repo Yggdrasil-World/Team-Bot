@@ -1,17 +1,20 @@
 package de.overcraft.util.invite;
 
 import de.overcraft.Bot;
-import de.overcraft.Section;
 import de.overcraft.strings.packages.InviteCommandStrings;
+import de.overcraft.util.Section;
+import de.overcraft.util.ServerSupplier;
 import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.MessageFlag;
 import org.javacord.api.entity.message.component.ActionRow;
+import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.server.invite.Invite;
 import org.javacord.api.entity.server.invite.InviteBuilder;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.MessageComponentInteraction;
 import org.javacord.api.listener.interaction.MessageComponentCreateListener;
 
+import java.nio.channels.Channel;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -73,10 +76,10 @@ public interface ServerInvite {
     }
 
     default MessageComponentCreateListener linkMessageComponentCreateListener() {
-        Invite invite = new InviteBuilder(Bot.get().getWelcomeChannel()).setUnique(true).setMaxUses(1).create().join();
         return  e -> {
             MessageComponentInteraction inviteInteraction = e.getMessageComponentInteraction();
             User inviteInteractingUser = requestingUser();
+            Invite invite = new InviteBuilder(inviteInteraction.getChannel().get().asServerChannel().get()).setMaxUses(1).setUnique(true).create().join();
             if (!inviteInteraction.getCustomId().equals(InviteCommandStrings.REQUEST.COMPONENT.BUTTON_LINK.ID))
                 return;
             if (!inviteInteractingUser.equals(requestingUser())) {

@@ -1,5 +1,6 @@
 package de.overcraft.command.commands;
 
+import de.overcraft.Bot;
 import de.overcraft.command.RegisterCommand;
 import de.overcraft.command.SlashCommandRegister;
 
@@ -11,6 +12,7 @@ import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.interaction.SlashCommandBuilder;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandOption;
+import org.javacord.api.listener.interaction.SlashCommandCreateListener;
 
 import java.util.Arrays;
 
@@ -28,6 +30,8 @@ public class ClearChannelCommand implements SlashCommandRegister {
                 .setEnabledInDms(false)
                 .setDefaultEnabledForPermissions(PermissionType.MANAGE_MESSAGES, PermissionType.MANAGE_CHANNELS, PermissionType.ADMINISTRATOR);
     }
+
+
 
     @Override
     public void onSlashCommandCreate(SlashCommandCreateEvent event) {
