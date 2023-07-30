@@ -56,22 +56,8 @@ public interface ServerInvite {
                                 interaction.getUser())
                         ).respond();
             }
-
             // If invite is approved create invite link message
             if (approvalsNeededFrom().isEmpty()) {
-                Invite invite = new InviteBuilder(Bot.get().getWelcomeChannel()).setUnique(true).setMaxUses(1).create().join();
-                MessageComponentCreateListener linkMessageComponentCreateListener = e -> {
-                    MessageComponentInteraction inviteInteraction = e.getMessageComponentInteraction();
-                    User inviteInteractingUser = interaction.getUser();
-                    if (!inviteInteraction.getCustomId().equals(InviteCommandStrings.REQUEST.COMPONENT.BUTTON_LINK.ID))
-                        return;
-                    if (!inviteInteractingUser.equals(requestingUser())) {
-                        interaction.createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_NOT_ALLOWED_TO_VIEW_INVITE);
-                        return;
-                    }
-                    inviteInteraction.createImmediateResponder().setContent(invite.getUrl().toString()).setFlags(MessageFlag.EPHEMERAL).respond();
-                };
-
                 interaction.createImmediateResponder()
                         .setContent(InviteCommandStrings.REQUEST.RESPONDER_ALLOW_MESSAGE.formatted(
                                 section().role().getMentionTag(),
@@ -81,8 +67,23 @@ public interface ServerInvite {
                         .setContent(InviteCommandStrings.REQUEST.RESPONDER_INVITE_LINK.formatted(requestingUser().getMentionTag()))
                         .addComponents(ActionRow.of(
                                 InviteCommandStrings.REQUEST.COMPONENT.BUTTON_LINK.COMPONENT
-                        )).send(interaction.getChannel().get().asServerTextChannel().get()).thenApply(message -> message.addMessageComponentCreateListener(linkMessageComponentCreateListener));
+                        )).send(interaction.getChannel().get().asServerTextChannel().get()).thenApply(message -> message.addMessageComponentCreateListener(linkMessageComponentCreateListener()));
             }
+        };
+    }
+
+    default MessageComponentCreateListener linkMessageComponentCreateListener() {
+        Invite invite = new InviteBuilder(Bot.get().getWelcomeChannel()).setUnique(true).setMaxUses(1).create().join();
+        return  e -> {
+            MessageComponentInteraction inviteInteraction = e.getMessageComponentInteraction();
+            User inviteInteractingUser = requestingUser();
+            if (!inviteInteraction.getCustomId().equals(InviteCommandStrings.REQUEST.COMPONENT.BUTTON_LINK.ID))
+                return;
+            if (!inviteInteractingUser.equals(requestingUser())) {
+                inviteInteraction.createImmediateResponder().setContent(InviteCommandStrings.REQUEST.RESPONDER_NOT_ALLOWED_TO_VIEW_INVITE);
+                return;
+            }
+            inviteInteraction.createImmediateResponder().setContent(invite.getUrl().toString()).setFlags(MessageFlag.EPHEMERAL).respond();
         };
     }
 
@@ -90,11 +91,10 @@ public interface ServerInvite {
      * @param user user to approve invite
      * @return this
      */
-    default ServerInvite approve(User user) {
+    default void approve(User user) {
         if (!approvalsNeededFrom().contains(user))
-            return this;
+            return;
         approvalsNeededFrom().remove(user);
-        return this;
     }
 
     /**
