@@ -1,6 +1,7 @@
 package de.overcraft;
 
-import de.overcraft.command.SlashCommandHandler;
+import de.overcraft.command.SlashCommandHandlerImpl;
+import de.overcraft.command.commands.SlashCommandHandler;
 import de.overcraft.message.MessageHandler;
 import de.overcraft.util.Sections;
 import org.javacord.api.DiscordApi;

@@ -1,7 +1,7 @@
 package de.overcraft;
 
 import de.overcraft.command.CommandFinder;
-import de.overcraft.command.SlashCommandHandler;
+import de.overcraft.command.SlashCommandHandlerImpl;
 import de.overcraft.message.MessageHandler;
 
 import de.overcraft.util.Section;
@@ -13,7 +13,7 @@ public class BotImpl {
     private static BotImpl botImpl;
     private final long serverId;
     private final DiscordApi api;
-    private final SlashCommandHandler slashCommandHandler;
+    private final SlashCommandHandlerImpl slashCommandHandlerInterface;
     private final MessageHandler messageHandler;
     private final Sections sections;
 
@@ -23,13 +23,13 @@ public class BotImpl {
         this.api = api;
         this.sections = new Sections(Section.Of(new long[]{503603263862734858L, 415544998558433280L}), Section.Of(new long[]{351264499124273152L}), Section.Of(new long[]{1082920396724121600L}));
         this.messageHandler = new MessageHandler(api);
-        this.slashCommandHandler = new SlashCommandHandler(api);
+        this.slashCommandHandlerInterface = new SlashCommandHandlerImpl(api.getServerById(serverId).get());
 
         registerCommands();
     }
 
     private void registerCommands() {
-        slashCommandHandler.registerSlashCommands(CommandFinder.FindCommands(), serverId);
+        slashCommandHandlerInterface.registerSlashCommands(CommandFinder.FindCommands());
     }
 
     public DiscordApi getApi() {
@@ -44,8 +44,8 @@ public class BotImpl {
         return botImpl;
     }
 
-    public SlashCommandHandler getSlashCommandHandler() {
-        return slashCommandHandler;
+    public SlashCommandHandlerImpl getSlashCommandHandler() {
+        return slashCommandHandlerInterface;
     }
 
     public MessageHandler getMessageHandler() {
