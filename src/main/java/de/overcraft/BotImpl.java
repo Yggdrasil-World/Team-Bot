@@ -6,17 +6,19 @@ import de.overcraft.command.SlashCommandHandlerImpl;
 import de.overcraft.util.Section;
 import de.overcraft.util.Sections;
 import org.javacord.api.DiscordApi;
+import org.javacord.api.entity.server.Server;
 
-public class BotImpl {
+import java.security.InvalidParameterException;
 
-    private static BotImpl botImpl;
+public class BotImpl implements Bot{
     private final long serverId;
     private final DiscordApi api;
     private final SlashCommandHandlerImpl slashCommandHandlerInterface;
     private final Sections sections;
 
     public BotImpl(DiscordApi api, long serverId) {
-        botImpl = this;
+        if(api.getServerById(serverId).isEmpty())
+            throw new InvalidParameterException("Invalid server id");
         this.serverId = serverId;
         this.api = api;
         this.sections = new Sections(Section.Of(new long[]{503603263862734858L, 415544998558433280L}), Section.Of(new long[]{351264499124273152L}), Section.Of(new long[]{1082920396724121600L}));
@@ -33,12 +35,18 @@ public class BotImpl {
         return api;
     }
 
-    public Sections getSections() {
-        return sections;
+    @Override
+    public long getServerId() {
+        return serverId;
     }
 
-    public static BotImpl get() {
-        return botImpl;
+    @Override
+    public Server getServer() {
+        return api.getServerById(serverId).get();
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 
     public SlashCommandHandlerImpl getSlashCommandHandler() {

@@ -7,8 +7,8 @@ import org.javacord.api.entity.server.Server;
 
 public interface Bot {
     DiscordApi getApi();
-    long serverId();
-    Server server();
-    SlashCommandHandler slashCommandHandler();
-    Sections sections();
+    long getServerId();
+    Server getServer();
+    SlashCommandHandler getSlashCommandHandler();
+    Sections getSections();
 }
