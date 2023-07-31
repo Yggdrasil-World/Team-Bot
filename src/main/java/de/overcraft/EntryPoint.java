@@ -15,5 +15,4 @@ public class EntryPoint {
             BotFactory.CreateBot(api, server.getId());
         }
     }
-
 }
