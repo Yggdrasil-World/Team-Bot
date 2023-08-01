@@ -20,6 +20,6 @@ public class UserInfoImpl implements UserInfo {
 
     @Override
     public String toString( ) {
-        return lastMessage.getIdAsString();
+        return lastMessage.getIdAsString() + "," + channelId();
     }
 }
