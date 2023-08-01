@@ -8,10 +8,12 @@ import java.util.Set;
 
 public class BotManager {
 
+    private static DiscordApi api;
     private static BotManager manager;
     private Map<Long, Bot> botMap;
 
-    public BotManager(Set<Server> servers) {
+    public BotManager(Set<Server> servers, DiscordApi inApi) {
+        api = inApi;
         for (Server server : servers) {
             BotFactory.CreateBot(server.getApi(), server.getId());
         }
@@ -23,5 +25,9 @@ public class BotManager {
 
     public static BotManager get() {
         return manager;
+    }
+
+    public static DiscordApi getApi() {
+        return api;
     }
 }

@@ -1,6 +1,7 @@
 package de.overcraft.util.userinfo;
 
 import de.overcraft.Bot;
+import de.overcraft.exceptions.InvalidParameterFormatException;
 import de.overcraft.logger.file.console.DefaultLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,8 +16,10 @@ public class UserInfoManagerImpl implements UserInfoManager {
 
     private final Logger logger;
     private final Map<Long, UserInfo> infoMap;
+    private final UserInfoPipeline pipeline;
 
     {
+        pipeline = UserInfoFactory.Pipelines.CreateUserInfoGsonPipeline();
         logger = LogManager.getLogger(DefaultLogger.class);
         addShutdownHooks();
     }
@@ -35,18 +38,13 @@ public class UserInfoManagerImpl implements UserInfoManager {
     private Map<Long, UserInfo> loadMapFromFile(Bot bot, File file) throws FileNotFoundException {
         logger.info("Loading user info map from file");
         BufferedReader reader = new BufferedReader(new FileReader(file));
-        Map<Long, UserInfo> collect = reader.lines().map(s -> {
-            String[] split = s.split("=");
-            return Map.entry(Long.parseLong(split[0]), UserInfoFactory.CreateUserInfo(UserInfoFactory.Meta.CreateUserMessageInfo(split[1], bot.getApi())));
-        }).collect(Collectors.toMap(t -> t.getKey(), t -> t.getValue()));
-        logger.info("Loaded " + collect.size() + " user infos from file");
-        return collect;
+        return new ConcurrentHashMap<>(pipeline.convert(reader).stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
     }
 
     private void addShutdownHooks() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                saveData(new File("logs/userinfo.data"));
+                saveData(new File("logs/userinfo.json"));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -65,7 +63,7 @@ public class UserInfoManagerImpl implements UserInfoManager {
                 userInfo.messageInfo().setLastMessage(message);
             }else {
                logger.info("Adding new user info to map");
-                infoMap.put(id, UserInfoFactory.CreateUserInfo(UserInfoFactory.Meta.CreateUserMessageInfo(message)));
+                infoMap.put(id, UserInfoFactory.CreateUserInfo(UserInfoFactory.Metas.CreateUserMessageInfo(message)));
             }
         });
     }
@@ -73,14 +71,7 @@ public class UserInfoManagerImpl implements UserInfoManager {
     public void saveData(File file) throws IOException {
         logger.info("Saving user data");
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-        for (Map.Entry<Long, UserInfo> entry : infoMap.entrySet()) {
-            logger.info("Saving data for user with id: " + entry.getKey());
-            String builder = entry.getKey() +
-                    "=" +
-                    entry.getValue().toString();
-            writer.write(builder);
-            writer.newLine();
-        }
+        writer.write(pipeline.convert(infoMap.entrySet()));
         writer.close();
     }
 
