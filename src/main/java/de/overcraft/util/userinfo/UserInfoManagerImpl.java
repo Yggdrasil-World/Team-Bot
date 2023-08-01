@@ -34,19 +34,7 @@ public class UserInfoManagerImpl implements UserInfoManager {
         });
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                Logger logger = LogManager.getLogger(DefaultLogger.class);
-                logger.info("Saving user data");
-                BufferedWriter writer = new BufferedWriter(new FileWriter(new File("logs/data.txt")));
-                for (Map.Entry<Long, UserInfo> entry : infoMap.entrySet()) {
-                    logger.info("Saving user data: " + entry.getKey());
-                    StringBuilder builder = new StringBuilder();
-                    builder.append(entry.getKey());
-                    builder.append("=");
-                    builder.append(entry.getValue().toString());
-                    writer.write(builder.toString());
-                    writer.newLine();
-                }
-                writer.close();
+                saveData(new File("logs/userinfo.data"));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -54,7 +42,19 @@ public class UserInfoManagerImpl implements UserInfoManager {
     }
 
     public void saveData(File file) throws IOException {
-        LogManager.getLogger(DefaultLogger.class).info("Saving user data");
+        Logger logger = LogManager.getLogger(DefaultLogger.class);
+        logger.info("Saving user data");
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        for (Map.Entry<Long, UserInfo> entry : infoMap.entrySet()) {
+            logger.info("Saving user data: " + entry.getKey());
+            StringBuilder builder = new StringBuilder();
+            builder.append(entry.getKey());
+            builder.append("=");
+            builder.append(entry.getValue().toString());
+            writer.write(builder.toString());
+            writer.newLine();
+        }
+        writer.close();
     }
 
     /**
