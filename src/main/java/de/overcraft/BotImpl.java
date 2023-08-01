@@ -11,6 +11,8 @@ import de.overcraft.util.userinfo.UserInfoManagerImpl;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.server.Server;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.security.InvalidParameterException;
 
 public class BotImpl implements Bot{
@@ -30,7 +32,13 @@ public class BotImpl implements Bot{
                 Section.Of(new long[]{351264499124273152L}, api.getRoleById(1026589866328346705L).get()), // Developer
                 Section.Of(new long[]{1082920396724121600L}, api.getRoleById(1021111184667189288L).get())); // Storywriter
         this.slashCommandHandler = SlashCommandHandlerFactory.CreateSlashCommandHandler(this::getServer);
-        this.userInfoManager = new UserInfoManagerImpl(this);
+        //this.userInfoManager = new UserInfoManagerImpl(this);
+        try {
+            this.userInfoManager = new UserInfoManagerImpl(this, new File("logs/userinfo.data"));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
         registerCommands();
     }
 

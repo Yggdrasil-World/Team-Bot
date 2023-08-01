@@ -5,39 +5,42 @@ import de.overcraft.logger.file.console.DefaultLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javacord.api.entity.message.Message;
-import org.javacord.api.entity.user.User;
 
 import java.io.*;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class UserInfoManagerImpl implements UserInfoManager {
 
+    private final Logger logger;
     private final Map<Long, UserInfo> infoMap;
 
     {
-        this.infoMap = new ConcurrentHashMap<>();
-    }
-
-    public UserInfoManagerImpl(Bot bot) {
-        addListeners(bot);
+        logger = LogManager.getLogger(DefaultLogger.class);
         addShutdownHooks();
     }
 
-    public UserInfoManagerImpl(Bot bot, File file) {
+    public UserInfoManagerImpl(Bot bot) {
+        this.infoMap = new ConcurrentHashMap<>();
+        addListeners(bot);
 
     }
 
-    private Map<Long, UserInfo> loadMapFromFile(Bot bot, File file) throws FileNotFoundException {
-        BufferedReader reader = new BufferedReader(new FileReader(file));
+    public UserInfoManagerImpl(Bot bot, File file) throws FileNotFoundException {
+        this.infoMap = loadMapFromFile(bot, file);
+        addListeners(bot);
+    }
 
-        return reader.lines().map(s -> {
+    private Map<Long, UserInfo> loadMapFromFile(Bot bot, File file) throws FileNotFoundException {
+        logger.info("Loading user info map from file");
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        Map<Long, UserInfo> collect = reader.lines().map(s -> {
             String[] split = s.split("=");
-            return Map.entry(Long.parseLong(split[0]), UserInfo.GetOf(split[1], bot.getApi()));
-        }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            return Map.entry(Long.parseLong(split[0]), UserInfoFactory.CreateUserInfo(UserInfoFactory.Meta.CreateUserMessageInfo(split[1], bot.getApi())));
+        }).collect(Collectors.toMap(t -> t.getKey(), t -> t.getValue()));
+        logger.info("Loaded " + collect.size() + " user infos from file");
+        return collect;
     }
 
     private void addShutdownHooks() {
@@ -57,16 +60,17 @@ public class UserInfoManagerImpl implements UserInfoManager {
             long id = event.getMessageAuthor().asUser().get().getId();
             Message message = event.getMessage();
             if(infoMap.containsKey(id)) {
-                infoMap.get(id).setLastMessage(message);
+                logger.info("Updating user info data for user with id: " + id);
+                UserInfo userInfo = infoMap.get(id);
+                userInfo.messageInfo().setLastMessage(message);
             }else {
-                LogManager.getLogger(DefaultLogger.class).info("Adding new user info to map");
-                infoMap.put(id, UserInfo.CreateNew(message));
+               logger.info("Adding new user info to map");
+                infoMap.put(id, UserInfoFactory.CreateUserInfo(UserInfoFactory.Meta.CreateUserMessageInfo(message)));
             }
         });
     }
 
     public void saveData(File file) throws IOException {
-        Logger logger = LogManager.getLogger(DefaultLogger.class);
         logger.info("Saving user data");
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         for (Map.Entry<Long, UserInfo> entry : infoMap.entrySet()) {
@@ -80,19 +84,6 @@ public class UserInfoManagerImpl implements UserInfoManager {
         writer.close();
     }
 
-    /**
-     * @param user user
-     * @return {@link UserInfo} about the user or null if there is none
-     */
-    @Override
-    public UserInfo getInfo(User user) {
-        return getInfo(user.getId());
-    }
-
-    /**
-     * @param userId id of the user
-     * @return {@link UserInfo} about the user or null if there is none
-     */
     @Override
     public UserInfo getInfo(long userId) {
         return infoMap.get(userId);

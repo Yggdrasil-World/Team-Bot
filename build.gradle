@@ -32,6 +32,9 @@ dependencies {
 
     // Environmental loading
     implementation 'io.github.cdimascio:dotenv-java:3.0.0'
+
+    // Gson
+    implementation 'com.google.code.gson:gson:2.10.1'
 }
 
 test {
