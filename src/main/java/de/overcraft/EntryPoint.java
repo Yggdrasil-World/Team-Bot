@@ -11,8 +11,6 @@ public class EntryPoint {
     public static void main(String[] args) {
         Dotenv dotenv = new DotenvBuilder().load();
         DiscordApi api = new DiscordApiBuilder().setToken(dotenv.get("DISCORD_API_KEY")).login().join();
-        for (Server server : api.getServers()) {
-            BotFactory.CreateBot(api, server.getId());
-        }
+        BotManager botManager = new BotManager(api.getServers(), api);
     }
 }

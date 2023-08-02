@@ -32,9 +32,21 @@ dependencies {
 
     // Environmental loading
     implementation 'io.github.cdimascio:dotenv-java:3.0.0'
+
+    // Gson
+    implementation 'com.google.code.gson:gson:2.10.1'
 }
 
 test {
     useJUnitPlatform()
 }
+tasks.register('unZip', Copy) {
+    dependsOn distZip
+    from zipTree(distZip.archiveFile)
+    into 'build/distributions/unzipped'
+}
 
+tasks.register('runBatch', Exec) {
+    dependsOn unZip
+    commandLine 'cmd', '/c', 'start', 'build\\distributions\\unzipped\\Team-Bot-1.0-SNAPSHOT\\bin\\Team-Bot.bat'
+}

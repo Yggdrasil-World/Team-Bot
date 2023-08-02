@@ -1,17 +1,13 @@
 package de.overcraft.util.userinfo;
 
-import org.javacord.api.entity.message.Message;
-
 import java.util.Date;
 
 public interface UserInfo {
+    UserMessageInfo messageInfo();
     default Date lastActivity() {
-        return Date.from(lastMessage().getCreationTimestamp());
+        return messageInfo().lastActivity();
     }
-    Message lastMessage();
-    void setLastMessage(Message message);
-
-    static UserInfo CreateNew(Message message) {
-        return new UserInfoImpl(message);
+    default UserInfo with(UserMessageInfo messageInfo) {
+        return UserInfoFactory.CreateUserInfo(messageInfo);
     }
 }
