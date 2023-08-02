@@ -27,7 +27,7 @@ public class UserInfoGsonPipeline implements UserInfoPipeline{
         for (Map.Entry<Long, UserInfo> userInfo : userInfos) {
             object.add(userInfo.getKey().toString(), gson.toJsonTree(userInfo.getValue(), UserInfo.class));
         }
-        return object.toString();
+        return gson.toJson(object);
     }
 
     @Override
