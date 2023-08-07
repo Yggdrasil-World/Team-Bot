@@ -44,35 +44,39 @@ public class UserInfoCommand implements SlashCommandRegister {
         DiscordApi api = user.getApi();
         SlashCommandInteractionOption action = interaction.getOptionByName("actions").orElseThrow().getOptionByIndex(0).orElseThrow();
         if(action.getName().equals("activity")) {
-            logger.info("Getting user info about activity from " + user.getName());
+            logger.trace("Getting user info about activity from " + user.getName());
             BotManager manager = BotManager.get();
             if(manager == null) {
                 logger.error("BotManager not assigned");
                 return;
             }
-            logger.info("Getting user info");
+            logger.trace("Getting server");
             Optional<Server> server = interaction.getServer();
             if(server.isEmpty()) {
                 logger.error("Command not executed in a server");
                 return;
             }
-            logger.info("Trying to get bot");
+            logger.trace("Trying to get bot");
             Bot bot = manager.getBot(server.get().getId());
             if(bot == null) {
                 logger.error("No bot instance found for this server");
                 return;
             }
-            logger.info("Trying to get info manager");
+            logger.trace("Trying to get info manager");
             UserInfoManager infoManager = bot.getUserInfoManager();
             if(infoManager == null) {
                 logger.error("No info manager provided by bot");
                 return;
             }
             UserInfo info = infoManager.getInfo(user);
-            logger.info("Getting last send message");
+            if(info == null) {
+                interaction.createImmediateResponder().setContent("No records for this user").respond();
+                return;
+            }
+            logger.trace("Getting last send message");
             Message message = api.getTextChannelById(info.messageInfo().channelId()).orElseThrow().getMessageById(info.messageInfo().lastMessageId()).join();
             String msg = user.getName() + " last activity: " + info.lastActivity().toString() + "\nMessage: " + message.getLink() + " on " + info.messageInfo().lastActivity().toString();
-            logger.info("Responding");
+            logger.trace("Responding");
             interaction.createImmediateResponder().setContent(msg).respond();
         }
         interaction.createImmediateResponder().setContent("Encountered an error").respond();
