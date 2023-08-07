@@ -4,7 +4,8 @@ import de.overcraft.Bot;
 import de.overcraft.BotManager;
 import de.overcraft.command.RegisterCommand;
 import de.overcraft.command.SlashCommandRegister;
-import de.overcraft.logger.file.console.DefaultLogger;
+import de.overcraft.logging.logger.file.console.DefaultLogger;
+import de.overcraft.logging.messages.SlashCommandInteractionMessage;
 import de.overcraft.util.userinfo.UserInfo;
 import de.overcraft.util.userinfo.UserInfoManager;
 import org.apache.logging.log4j.LogManager;
@@ -18,11 +19,10 @@ import org.javacord.api.interaction.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 @RegisterCommand
 public class UserInfoCommand implements SlashCommandRegister {
-    Logger logger = LogManager.getLogger(DefaultLogger.class);
+    private static final Logger logger = LogManager.getLogger(DefaultLogger.class);
     @Override
     public SlashCommandBuilder get() {
         return SlashCommand.with("userinfo", "access info about user",
@@ -42,7 +42,6 @@ public class UserInfoCommand implements SlashCommandRegister {
         SlashCommandInteraction interaction = event.getSlashCommandInteraction();
         User user = interaction.getArgumentUserValueByName("user").orElseThrow();
         DiscordApi api = user.getApi();
-        logger.info("Full command name: " + interaction + "   Command name: " + interaction.getCommandName());
         SlashCommandInteractionOption action = interaction.getOptionByName("actions").orElseThrow().getOptionByIndex(0).orElseThrow();
         if(action.getName().equals("activity")) {
             logger.info("Getting user info about activity from " + user.getName());

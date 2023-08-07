@@ -5,7 +5,7 @@ import de.overcraft.BotManager;
 import de.overcraft.command.RegisterCommand;
 import de.overcraft.command.SlashCommandRegister;
 import de.overcraft.command.SlashCommandTemplates;
-import de.overcraft.strings.packages.InviteCommandStrings;
+import de.overcraft.strings.commands.InviteCommandStrings;
 
 import de.overcraft.util.Sections;
 import de.overcraft.util.invite.ServerInvite;
