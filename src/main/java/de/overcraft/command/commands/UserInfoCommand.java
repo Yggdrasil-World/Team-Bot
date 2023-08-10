@@ -82,7 +82,6 @@ public class UserInfoCommand implements SlashCommandRegister {
             info = infoManager.getInfo(user);
             if(info == null) {
                 responseMessage = "No records for this user";
-                return;
             }else {
                 Message message = api.getTextChannelById(info.messageInfo().channelId()).orElseThrow().getMessageById(info.messageInfo().lastMessageId()).join();
                 responseMessage = user.getName() + " last activity: " + info.lastActivity().toString() + "\nMessage: " + message.getLink() + " on " + info.messageInfo().lastActivity().toString();
