@@ -5,6 +5,7 @@ import org.javacord.api.entity.server.Server;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BotManager {
 
@@ -13,9 +14,11 @@ public class BotManager {
     private Map<Long, Bot> botMap;
 
     public BotManager(Set<Server> servers, DiscordApi inApi) {
+        manager = this;
         api = inApi;
+        botMap = new ConcurrentHashMap<>();
         for (Server server : servers) {
-            BotFactory.CreateBot(server.getApi(), server.getId());
+            botMap.put(server.getId(),BotFactory.CreateBot(server.getApi(), server.getId()));
         }
     }
 

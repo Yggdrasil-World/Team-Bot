@@ -1,20 +1,16 @@
 package de.overcraft.util.invite;
 
-import de.overcraft.Bot;
-import de.overcraft.strings.packages.InviteCommandStrings;
+import de.overcraft.strings.commands.InviteCommandStrings;
 import de.overcraft.util.Section;
-import de.overcraft.util.ServerSupplier;
 import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.MessageFlag;
 import org.javacord.api.entity.message.component.ActionRow;
-import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.server.invite.Invite;
 import org.javacord.api.entity.server.invite.InviteBuilder;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.MessageComponentInteraction;
 import org.javacord.api.listener.interaction.MessageComponentCreateListener;
 
-import java.nio.channels.Channel;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;

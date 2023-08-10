@@ -4,7 +4,7 @@ import de.overcraft.command.CommandFinder;
 import de.overcraft.command.SlashCommandHandler;
 import de.overcraft.command.SlashCommandHandlerFactory;
 
-import de.overcraft.logger.file.console.DefaultLogger;
+import de.overcraft.logging.logger.file.console.DefaultLogger;
 import de.overcraft.util.Section;
 import de.overcraft.util.Sections;
 import de.overcraft.util.userinfo.UserInfoManager;

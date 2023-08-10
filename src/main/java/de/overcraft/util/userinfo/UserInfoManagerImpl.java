@@ -1,8 +1,7 @@
 package de.overcraft.util.userinfo;
 
 import de.overcraft.Bot;
-import de.overcraft.exceptions.InvalidParameterFormatException;
-import de.overcraft.logger.file.console.DefaultLogger;
+import de.overcraft.logging.logger.file.console.DefaultLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javacord.api.entity.message.Message;

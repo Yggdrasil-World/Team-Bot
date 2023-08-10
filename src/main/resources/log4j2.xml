@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
     <Appenders>
-        <Console name="Console">
+        <Console name="Console" target="SYSTEM_OUT">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
         <File name="File" fileName="logs/bot.log">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %c %l [%t] %-5level %logger{36} - %msg%n"/>
+        </File>
+        <File name="Trace-File" fileName="logs/bot-trace.log">
+            <ThresholdFilter level="INFO" onMatch="DENY" onMismatch="ACCEPT"/>
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %c %l [%t] %-5level %logger{36} - %msg%n"/>
         </File>
     </Appenders>
     <Loggers>
-        <Logger name="de.overcraft.logger.file.console.DefaultLogger" level="info">
+        <Logger name="de.overcraft.logging.logger.file.console.DefaultLogger" level="INFO">
         </Logger>
-        <Logger name="de.overcraft.logger.file.console" level="info">
+        <Logger name="de.overcraft.logger.file.console" level="INFO">
             <AppenderRef ref="Console"/>
         </Logger>
-        <Logger name="de.overcraft.logger.file" level="info">
+        <Logger name="de.overcraft.logger.file" level="INFO">
             <AppenderRef ref="File"/>
+            <AppenderRef ref="Trace-File"/>
         </Logger>
-        <Root level="FATAL">
-        </Root>
     </Loggers>
-
 </Configuration>

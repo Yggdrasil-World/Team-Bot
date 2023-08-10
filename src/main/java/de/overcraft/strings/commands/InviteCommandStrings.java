@@ -1,4 +1,4 @@
-package de.overcraft.strings.packages;
+package de.overcraft.strings.commands;
 
 import org.javacord.api.entity.message.component.ActionRow;
 import org.javacord.api.entity.message.component.Button;
