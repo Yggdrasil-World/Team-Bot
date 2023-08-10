@@ -10,6 +10,8 @@ import de.overcraft.util.userinfo.UserInfo;
 import de.overcraft.util.userinfo.UserInfoManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.server.Server;
@@ -23,6 +25,8 @@ import java.util.Optional;
 @RegisterCommand
 public class UserInfoCommand implements SlashCommandRegister {
     private static final Logger logger = LogManager.getLogger(DefaultLogger.class);
+    private static final Marker marker = MarkerManager.getMarker("SC_INTERACTION");
+
     @Override
     public SlashCommandBuilder get() {
         return SlashCommand.with("userinfo", "access info about user",
@@ -41,44 +45,51 @@ public class UserInfoCommand implements SlashCommandRegister {
     public void onSlashCommandCreate(SlashCommandCreateEvent event) {
         SlashCommandInteraction interaction = event.getSlashCommandInteraction();
         User user = interaction.getArgumentUserValueByName("user").orElseThrow();
-        DiscordApi api = user.getApi();
+        DiscordApi api = interaction.getApi();
         SlashCommandInteractionOption action = interaction.getOptionByName("actions").orElseThrow().getOptionByIndex(0).orElseThrow();
+        BotManager manager;
+        Optional<Server> server;
+        Bot bot;
+        UserInfoManager infoManager;
+        UserInfo info;
+        String responseMessage = "Encountered an error";
         if(action.getName().equals("activity")) {
-            logger.trace("Getting user info about activity from " + user.getName());
-            BotManager manager = BotManager.get();
+            logger.trace(marker, new SlashCommandInteractionMessage(interaction, "Confirmed activity command"));
+            manager = BotManager.get();
             if(manager == null) {
-                logger.error("BotManager not assigned");
+                logger.error(marker, new SlashCommandInteractionMessage(interaction, "Bot manager not assigned! Exiting"));
                 return;
             }
-            logger.trace("Getting server");
-            Optional<Server> server = interaction.getServer();
+            logger.trace(marker, new SlashCommandInteractionMessage(interaction, "Getting server of interaction"));
+            server = interaction.getServer();
             if(server.isEmpty()) {
-                logger.error("Command not executed in a server");
+                logger.error(marker, new SlashCommandInteractionMessage(interaction, "Server not found! Exiting"));
                 return;
             }
-            logger.trace("Trying to get bot");
-            Bot bot = manager.getBot(server.get().getId());
+            logger.trace(marker, new SlashCommandInteractionMessage(interaction, "Getting bot instance"));
+            bot = manager.getBot(server.get().getId());
             if(bot == null) {
-                logger.error("No bot instance found for this server");
+                logger.error(marker, new SlashCommandInteractionMessage(interaction, "No bot instance found! Exiting"));
                 return;
             }
-            logger.trace("Trying to get info manager");
-            UserInfoManager infoManager = bot.getUserInfoManager();
+            logger.trace(marker, new SlashCommandInteractionMessage(interaction, "Getting info manager"));
+            infoManager = bot.getUserInfoManager();
             if(infoManager == null) {
-                logger.error("No info manager provided by bot");
+                logger.error(marker, new SlashCommandInteractionMessage(interaction, "No info manager found! Exiting"));
                 return;
             }
-            UserInfo info = infoManager.getInfo(user);
+            logger.trace(marker, new SlashCommandInteractionMessage(interaction, "Constructing response for command"));
+            info = infoManager.getInfo(user);
             if(info == null) {
-                interaction.createImmediateResponder().setContent("No records for this user").respond();
+                responseMessage = "No records for this user";
                 return;
+            }else {
+                Message message = api.getTextChannelById(info.messageInfo().channelId()).orElseThrow().getMessageById(info.messageInfo().lastMessageId()).join();
+                responseMessage = user.getName() + " last activity: " + info.lastActivity().toString() + "\nMessage: " + message.getLink() + " on " + info.messageInfo().lastActivity().toString();
             }
-            logger.trace("Getting last send message");
-            Message message = api.getTextChannelById(info.messageInfo().channelId()).orElseThrow().getMessageById(info.messageInfo().lastMessageId()).join();
-            String msg = user.getName() + " last activity: " + info.lastActivity().toString() + "\nMessage: " + message.getLink() + " on " + info.messageInfo().lastActivity().toString();
-            logger.trace("Responding");
-            interaction.createImmediateResponder().setContent(msg).respond();
+
+            logger.trace(marker, new SlashCommandInteractionMessage(interaction, "Responding"));
+            interaction.createImmediateResponder().setContent(responseMessage).respond();
         }
-        interaction.createImmediateResponder().setContent("Encountered an error").respond();
     }
 }

@@ -1,11 +1,17 @@
 package de.overcraft.logging.messages;
 
-import org.javacord.api.interaction.Interaction;
 import org.javacord.api.interaction.SlashCommandInteraction;
 
 public class SlashCommandInteractionMessage extends InteractionMessage<SlashCommandInteraction>{
+
+    protected String message;
+
     public SlashCommandInteractionMessage(SlashCommandInteraction interaction) {
         super(interaction);
+    }
+    public SlashCommandInteractionMessage(SlashCommandInteraction interaction, String message) {
+        super(interaction);
+        this.message = message;
     }
 
     @Override
@@ -13,6 +19,8 @@ public class SlashCommandInteractionMessage extends InteractionMessage<SlashComm
         StringBuilder builder = new StringBuilder(super.getFormattedMessage());
         builder.append(", ");
         builder.append(String.format("SlashCommandInteraction (fullCmdName: %s)", interaction.getFullCommandName()));
+        builder.append(" - ");
+        builder.append(message);
         return builder.toString();
     }
 
@@ -23,7 +31,7 @@ public class SlashCommandInteractionMessage extends InteractionMessage<SlashComm
 
     @Override
     public Object[] getParameters() {
-        return null;
+        return new Object[]{interaction};
     }
 
     @Override
