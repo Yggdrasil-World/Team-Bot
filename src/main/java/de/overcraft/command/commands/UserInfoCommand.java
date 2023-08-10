@@ -86,7 +86,6 @@ public class UserInfoCommand implements SlashCommandRegister {
                 Message message = api.getTextChannelById(info.messageInfo().channelId()).orElseThrow().getMessageById(info.messageInfo().lastMessageId()).join();
                 responseMessage = user.getName() + " last activity: " + info.lastActivity().toString() + "\nMessage: " + message.getLink() + " on " + info.messageInfo().lastActivity().toString();
             }
-
             logger.trace(marker, new SlashCommandInteractionMessage(interaction, "Responding"));
             interaction.createImmediateResponder().setContent(responseMessage).respond();
         }
